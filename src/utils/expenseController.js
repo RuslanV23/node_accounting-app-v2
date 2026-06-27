@@ -2,30 +2,18 @@ const { userService } = require('../users/users.router');
 const BaseController = require('./baseController');
 
 class ExpenseController extends BaseController {
-  createOne = (requst, response) => {
-    const body = requst.body;
-
-    if (Object.keys(body).length === 0) {
-      response.sendStatus(400);
-
-      return;
-    }
-
-    if (!Object.hasOwn(body, 'userId')) {
-      response.sendStatus(400);
-
-      return;
-    }
+  createOne = (request, response) => {
+    const body = request.body;
 
     if (!userService.getById(body.userId)) {
-      response.sendStatus(400);
-
-      return;
+      return response.status(400).json({
+        message: 'User not found',
+      });
     }
 
-    const newUser = this.service.createOne(body);
+    const newExpense = this.service.createOne(body);
 
-    response.status(201).json(newUser);
+    response.status(201).json(newExpense);
   };
 
   getByQuery = (request, response) => {
@@ -59,7 +47,7 @@ class ExpenseController extends BaseController {
       });
     }
 
-    response.send(items);
+    response.json(items);
   };
 }
 

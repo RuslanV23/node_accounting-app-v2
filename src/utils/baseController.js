@@ -3,59 +3,53 @@ class BaseController {
     this.service = service;
   }
 
-  getAll = (requst, response) => {
+  getAll = (request, response) => {
     response.send(this.service.get());
   };
 
-  getOne = (requst, response) => {
-    const { paramsId } = requst.params;
+  getOne = (request, response) => {
+    const { paramsId } = request.params;
 
     if (Number.isNaN(+paramsId)) {
-      response.sendStatus(400);
-
-      return;
+      return response.status(400).json({
+        message: 'Invalid id',
+      });
     }
 
     const userFound = this.service.getById(+paramsId);
 
     if (!userFound) {
-      response.sendStatus(404);
-
-      return;
+      return response.status(404).json({
+        message: 'Resource not found',
+      });
     }
 
-    response.send(userFound);
+    response.json(userFound);
   };
 
-  createOne = (requst, response) => {
-    const body = requst.body;
-
-    if (Object.keys(body).length === 0) {
-      response.sendStatus(400);
-
-      return;
-    }
+  createOne = (request, response) => {
+    const body = request.body;
 
     const newUser = this.service.createOne(body);
 
     response.status(201).json(newUser);
   };
 
-  deleteOne = (requst, response) => {
-    const { paramsId } = requst.params;
+  deleteOne = (request, response) => {
+    const { paramsId } = request.params;
 
     if (Number.isNaN(+paramsId)) {
-      response.sendStatus(400);
-
-      return;
+      return response.status(400).json({
+        message: 'Invalid id',
+      });
     }
 
     const userFound = this.service.getById(+paramsId);
 
     if (!userFound) {
-      response.sendStatus(404);
-
-      return;
+      return response.status(404).json({
+        message: 'Resource not found',
+      });
     }
 
     this.service.deleteOne(+paramsId);
@@ -63,27 +57,27 @@ class BaseController {
     response.sendStatus(204);
   };
 
-  updateOne = (requst, response) => {
-    const { paramsId } = requst.params;
-    const responseUser = requst.body;
+  updateOne = (request, response) => {
+    const { paramsId } = request.params;
+    const responseUser = request.body;
 
     if (Number.isNaN(+paramsId)) {
-      response.sendStatus(400);
-
-      return;
+      return response.status(400).json({
+        message: 'Invalid id',
+      });
     }
 
     const userFound = this.service.getById(+paramsId);
 
     if (!userFound) {
-      response.sendStatus(404);
-
-      return;
+      return response.status(404).json({
+        message: 'Resource not found',
+      });
     }
 
-    this.service.updateOne({ ...responseUser, id: paramsId });
+    this.service.updateOne({ ...responseUser, id: +paramsId });
 
-    response.send(userFound);
+    response.json(this.service.getById(+paramsId));
   };
 }
 
